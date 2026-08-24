@@ -1,0 +1,29 @@
+name: WebGPT writer checks
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  repository-policy:
+    name: repository-policy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the pull request
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate the protected writer contract and diff
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          test -s AGENTS.md
+          grep -Fq '<!-- webgpt-git-writer contract: begin -->' AGENTS.md
+          grep -Fq '<!-- webgpt-git-writer contract: end -->' AGENTS.md
+          git diff --check "$BASE_SHA" "$HEAD_SHA"
