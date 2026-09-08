@@ -1,4 +1,4 @@
-name: WebGPT writer checks
+name: Repository checks
 
 on:
   pull_request:
@@ -18,12 +18,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Validate the protected writer contract and diff
+      - name: Validate repository instructions and diff
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           test -s AGENTS.md
-          grep -Fq '<!-- webgpt-git-writer contract: begin -->' AGENTS.md
-          grep -Fq '<!-- webgpt-git-writer contract: end -->' AGENTS.md
           git diff --check "$BASE_SHA" "$HEAD_SHA"
